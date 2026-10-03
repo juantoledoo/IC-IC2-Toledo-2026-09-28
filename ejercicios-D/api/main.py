@@ -1,4 +1,8 @@
+import os
+
+import psycopg
 from fastapi import FastAPI, HTTPException, Response
+from fastapi.responses import JSONResponse
 from pydantic import BaseModel, Field
 
 app = FastAPI()
@@ -90,3 +94,29 @@ def listar_autores():
 def crear_autor(autor: Autor):
     autores.append(autor)
     return autor
+
+
+def conectar_db():
+    return psycopg.connect(
+        host=os.environ["DB_HOST"],
+        port=os.environ.get("DB_PORT", "5432"),
+        user=os.environ["DB_USER"],
+        password=os.environ["DB_PASSWORD"],
+        dbname=os.environ["DB_NAME"],
+        connect_timeout=3,
+    )
+
+
+@app.get("/salud")
+def salud():
+    try:
+        with conectar_db() as conexion:
+            with conexion.cursor() as cursor:
+                cursor.execute("SELECT 1")
+                cursor.fetchone()
+        return {"base": "ok"}
+    except KeyError as error:
+        motivo = f"falta la variable de entorno {error}"
+    except Exception as error:
+        motivo = str(error)
+    return JSONResponse(status_code=503, content={"base": "error", "motivo": motivo})

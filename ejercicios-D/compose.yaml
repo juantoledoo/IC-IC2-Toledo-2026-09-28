@@ -3,6 +3,12 @@ services:
     build: ./api
     ports:
       - "8000:8000"
+    environment:
+      DB_HOST: base
+      DB_PORT: "5432"
+      DB_USER: postgres
+      DB_PASSWORD: clase3
+      DB_NAME: postgres
   base:
     image: postgres:16
     environment:
@@ -11,4 +17,4 @@ services:
     image: eclipse-mosquitto:2
     ports:
       - "1883:1883"
-       
+

@@ -24,3 +24,16 @@ imagen oficial. En sus logs aparece que arranca en "modo local" (solo acepta
 clientes de adentro de su propio contenedor), algo que hay que cambiar con un
 archivo de configuración más adelante.
 
+
+## D3 - Configuración por variables de entorno
+
+Agregué a la API un endpoint `GET /salud` que intenta conectarse a Postgres con
+`psycopg` y responde `{"base": "ok"}` o, si falla, un `503` con el motivo. El
+host, el puerto, el usuario, la contraseña y el nombre de la base no están en el
+código: la API los lee con `os.environ` y el `compose.yaml` se los pasa con
+`environment:`. Lo comprobé buscando la contraseña en `main.py` (no aparece) y
+cambiando solo `DB_HOST` en el compose: con `base-que-no-existe` la API devolvió
+503 con "Name or service not known", y con `base` volvió a responder ok. Así el
+mismo código corre en mi máquina, en el compose o en un servidor cambiando solo
+la configuración, y la contraseña no queda subida a GitHub dentro de un `.py`.
+
