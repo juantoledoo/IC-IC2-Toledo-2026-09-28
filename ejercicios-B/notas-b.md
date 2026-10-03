@@ -40,3 +40,16 @@ reutiliza las capas hasta la primera que cambió: el `requirements.txt` casi no
 cambia, así que su capa y la del `pip install` se reutilizan, y lo que cambia
 seguido (el código) queda al final, donde invalida solo su propia capa.
 
+
+## B6 - Imagen más liviana
+
+Con `docker images consulta` comparé la misma imagen construida sobre
+`python:3.12` y sobre `python:3.12-slim`: la completa pesa varias veces más. La
+imagen completa trae herramientas de compilación, cabeceras de librerías y otros
+programas de desarrollo; la slim trae solo lo necesario para ejecutar Python.
+Una imagen más chica se descarga más rápido, arranca antes y tiene menos cosas
+que pueden fallar o ser atacadas. La grande hace falta cuando una librería tiene
+que compilar código en C al instalarse (y no trae una versión ya compilada),
+porque para eso se necesitan el compilador y las cabeceras que la slim no
+incluye.
+
