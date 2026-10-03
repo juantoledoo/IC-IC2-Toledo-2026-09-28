@@ -18,3 +18,15 @@ que el script funcione. En mi máquina el script anda porque `requests` está
 instalado acá, pero la imagen es un entorno limpio que solo tiene lo que le
 pedí instalar. Si una librería no está en el `requirements.txt` y no se instala
 en el Dockerfile, no está en la imagen.
+
+
+## B4 - RUN vs CMD
+
+Agregué un `RUN echo ...` al Dockerfile y corrí el contenedor tres veces. El
+texto del `RUN` se imprimió una sola vez, durante el `docker build` (usando
+`--progress=plain` para verlo), y quedó guardado en la imagen. El `CMD` (mi
+script) se ejecutó las tres veces, una por cada contenedor que arranqué. `RUN`
+pasa una vez al construir la imagen; `CMD` pasa cada vez que arranca un
+contenedor.
+
+
