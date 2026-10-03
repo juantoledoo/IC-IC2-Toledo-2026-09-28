@@ -10,3 +10,28 @@ estaban instalados en el venv de la clase 2, pero la imagen es un entorno
 limpio que solo tiene lo declarado en el `requirements.txt`. Lo resolví
 agregando `uvicorn`.
 
+## C3 - "El contenedor corre pero no llego a /docs"
+
+**(a) Sin publicar el puerto (sin `-p`).** `docker logs` mostró
+`Uvicorn running on http://0.0.0.0:8000`: la API funciona adentro. `docker ps`
+mostró `8000/tcp` sin flecha hacia mi máquina. Desde afuera:
+`curl: (7) Failed to connect to 127.0.0.1 port 8000 ... Could not connect to server`
+(y `ERR_CONNECTION_REFUSED` en el navegador). Es "connection refused": nadie
+atiende en ese puerto de mi máquina, porque el puerto no está publicado. El
+`EXPOSE` del Dockerfile solo documenta.
+
+**(b) Puerto publicado pero sin `--host`.** `docker logs` mostró
+`Uvicorn running on http://127.0.0.1:8000`. Desde afuera:
+`curl: (52) Empty reply from server` (y `ERR_EMPTY_RESPONSE` en el navegador).
+El puerto sí está publicado, pero la conexión se corta sin respuesta.
+
+**Cómo distinguirlos:** "refused / couldn't connect" es puerto sin publicar;
+"empty reply / connection reset", con el log diciendo `127.0.0.1`, es uvicorn
+escuchando solo en localhost.
+
+**Qué significa `127.0.0.1` adentro de un contenedor:** es el `localhost` del
+propio contenedor, y solo acepta conexiones que se originan adentro de ese
+mismo contenedor. Lo que llega desde mi máquina entra por otra interfaz de red
+del contenedor, que uvicorn ignora si escucha solo en `127.0.0.1`. Con
+`--host 0.0.0.0` escucha en todas las interfaces.
+
