@@ -35,3 +35,20 @@ mismo contenedor. Lo que llega desde mi máquina entra por otra interfaz de red
 del contenedor, que uvicorn ignora si escucha solo en `127.0.0.1`. Con
 `--host 0.0.0.0` escucha en todas las interfaces.
 
+
+## C4 - Lo que no tiene que viajar
+
+Recreé el problema poniendo un `venv` y una carpeta `__pycache__` dentro de
+`ejercicios-C`. Sin `.dockerignore`, el `COPY . .` los metió en la imagen: lo
+comprobé con `docker exec api-libros ls -a /app`, que listó `venv` y
+`__pycache__`. Agregué un `.dockerignore` con `venv/`, `**/__pycache__/`,
+`*.pyc`, `.git/` y `.pytest_cache/`; la imagen resultante (`api-libros:limpia`)
+pesa menos que la anterior (`api-libros:con-venv`, comparadas con
+`docker images api-libros`) y ya no tiene esas carpetas adentro.
+
+Un `venv` de mi máquina no serviría adentro del contenedor: tiene programas
+compilados para Windows y rutas de mi computadora que adentro no existen (el
+contenedor es Linux). Además la imagen instala sus propias dependencias con
+`pip` durante el build.
+
+
