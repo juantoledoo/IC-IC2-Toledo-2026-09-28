@@ -37,3 +37,24 @@ cambiando solo `DB_HOST` en el compose: con `base-que-no-existe` la API devolvi�
 mismo código corre en mi máquina, en el compose o en un servidor cambiando solo
 la configuración, y la contraseña no queda subida a GitHub dentro de un `.py`.
 
+
+## D4 - El bug de localhost
+
+Con `DB_HOST: localhost`, `/salud` devolvió 503 con el motivo
+`connection failed: connection to server at "127.0.0.1", port 5432 failed: Connection refused`.
+Desde adentro del contenedor de la API, `localhost` es el propio contenedor de
+la API, donde no hay ningún Postgres escuchando: la base está en otro
+contenedor, con su propio `localhost`. Lo arreglé usando el nombre del servicio
+del compose: `DB_HOST: base`. Compose arma una red interna compartida y resuelve
+ese nombre a la dirección del contenedor de la base (comprobé con
+`docker compose exec api python -c "import socket; print(socket.gethostbyname('base'))"`).
+
+Relación con C3: allá, uvicorn escuchando solo en `127.0.0.1` adentro del
+contenedor aceptaba únicamente conexiones nacidas ahí mismo; acá, la API
+conectándose a `127.0.0.1` solo llega a sí misma. En ambos casos `127.0.0.1`
+adentro de un contenedor significa "este mismo contenedor".
+
+Dos puntos de vista para la misma base: otro contenedor del compose la alcanza
+por nombre de servicio y puerto de adentro (`base:5432`); mi máquina la alcanza
+por `localhost` y el puerto publicado con `ports:`.
+
