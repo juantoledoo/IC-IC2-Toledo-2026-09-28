@@ -1,0 +1,10 @@
+services:
+  api:
+    build: ./api
+    ports:
+      - "8000:8000"
+  base:
+    image: postgres:16
+    environment:
+      POSTGRES_PASSWORD: clase3
+      
