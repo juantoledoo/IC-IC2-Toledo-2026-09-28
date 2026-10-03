@@ -1,6 +1,6 @@
 FROM python:3.12-slim
 WORKDIR /app
-COPY . .
+COPY requirements.txt .
 RUN pip install -r requirements.txt
-RUN echo "RUN: esto se ejecuta UNA vez, al construir la imagen"
+COPY . .
 CMD ["python", "consulta.py"]

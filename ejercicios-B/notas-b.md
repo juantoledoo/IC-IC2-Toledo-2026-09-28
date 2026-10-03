@@ -30,3 +30,13 @@ pasa una vez al construir la imagen; `CMD` pasa cada vez que arranca un
 contenedor.
 
 
+## B5 - La caché de capas
+
+Con `COPY . .` antes del `RUN pip install`, cambiar una sola línea del script
+invalidó la capa del `COPY` y todas las siguientes, así que el `pip install`
+se ejecutó de nuevo. Lo arreglé reordenando: primero `COPY requirements.txt .`,
+después `RUN pip install -r requirements.txt` y al final `COPY . .`. Docker
+reutiliza las capas hasta la primera que cambió: el `requirements.txt` casi no
+cambia, así que su capa y la del `pip install` se reutilizan, y lo que cambia
+seguido (el código) queda al final, donde invalida solo su propia capa.
+
