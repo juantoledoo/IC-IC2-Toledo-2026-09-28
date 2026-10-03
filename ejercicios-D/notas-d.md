@@ -12,3 +12,15 @@ Postgres se niega a arrancar sin la variable de entorno `POSTGRES_PASSWORD`
 (está documentada en su página de Docker Hub). La agregué en `environment:` del
 servicio y desde entonces los dos servicios siguen vivos en
 `docker compose ps`. La contraseña es solo de práctica, para una base local.
+
+
+## D2 - Sumar el broker
+
+Agregué un tercer servicio, `broker`, con la imagen `eclipse-mosquitto:2` y el
+puerto 1883 publicado. Con `docker compose up -d` los tres servicios (`api`,
+`base` y `broker`) levantaron con un solo comando y quedaron en `Up` en
+`docker compose ps`. El broker no lo instalé ni lo programé: lo bajé como
+imagen oficial. En sus logs aparece que arranca en "modo local" (solo acepta
+clientes de adentro de su propio contenedor), algo que hay que cambiar con un
+archivo de configuración más adelante.
+
