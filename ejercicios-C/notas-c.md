@@ -52,3 +52,11 @@ contenedor es Linux). Además la imagen instala sus propias dependencias con
 `pip` durante el build.
 
 
+Aclaración: si miro adentro de un contenedor que ya está corriendo, con
+`docker exec api-libros ls -a /app`, aparece un `__pycache__` aunque el
+`.dockerignore` lo excluya. No viajó con el `COPY`: lo genera Python al arrancar
+la API, cuando uvicorn importa `main.py`. Para ver lo que realmente trae la
+imagen hay que listar sin arrancar la API:
+`docker run --rm api-libros:limpia ls -a /app`, que no muestra ni `venv` ni
+`__pycache__`.
+
